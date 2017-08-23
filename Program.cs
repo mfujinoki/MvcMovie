@@ -26,6 +26,7 @@ namespace MvcMovie
                     {
 
                         DBinitialize.EnsureCreated(services); 
+                        SeedData.Initialize(services);
                     } 
                         catch (Exception ex) 
                     { 
