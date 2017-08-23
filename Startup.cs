@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using MvcMovie.Models;
+using Microsoft.Extensions.Logging;
 namespace MvcMovie
 {
     public class Startup
@@ -47,7 +48,23 @@ namespace MvcMovie
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-            //DBinitialize.EnsureCreated(app.ApplicationServices);
+            
+            using (var scope = app.ApplicationServices.CreateScope()) 
+            { 
+                        var services = scope.ServiceProvider;
+
+                    try 
+                    {
+                        DBinitialize.EnsureCreated(services); 
+                        SeedData.Initialize(services);
+                    } 
+                    catch (Exception ex) 
+                    { 
+                            var logger = services.GetRequiredService<ILogger<Program>>();                                
+                            logger.LogError(ex, "An error occurred seeding the DB."); 
+                    }
+            }
+
         }
     }
 }
